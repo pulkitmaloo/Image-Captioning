@@ -54,23 +54,17 @@ def get_caption_split():
     return train_captions, dev_captions, test_captions
 
 
-def create_vocab(train_captions):
+def create_vocab(train_captions_raw):
     # vocab covers all words in dev, test set -> good!
-    captions_list = itertools.chain.from_iterable(test_captions_raw.values())
+    captions_list = itertools.chain.from_iterable(train_captions_raw.values())
     captions_tokens = map(text_to_word_sequence, captions_list)
     vocab = itertools.chain.from_iterable(captions_tokens)
-    return Counter(vocab)
+    return ["<bos>", "<eos>", "<unk>"] + list(vocab)
 
 
 def vocab2index(vocab):
-    token2idx = {token: i+3 for i, token in enumerate(vocab)}
-    token2idx["<bos>"] = 0
-    token2idx["<eos>"] = 1
-    token2idx["<unk>"] = 2
-    idx2token = {i+3: token for i, token in enumerate(vocab)}
-    idx2token[0] = "<bos>"
-    idx2token[1] = "<eos>"
-    idx2token[2] = "<unk>"
+    token2idx = {token: i for i, token in enumerate(vocab)}
+    idx2token = {i: token for i, token in enumerate(vocab)}
     return token2idx, idx2token
 
 
@@ -79,10 +73,10 @@ def process_captions(captions_data, token2idx):
         return [list(map(lambda x: token2idx.get(x, 2), text_to_word_sequence(cap))) 
                 for cap in caption]
     
-    for data in captions_data:
+    for data in captions_data_new:
         for img, cap in data.items():
             data[img] = caption2idx(cap)
-    return captions_data
+    return captions_data_new
 
 
 def visualize_training_example(img_fname, captions):
@@ -96,15 +90,15 @@ def visualize_training_example(img_fname, captions):
 if __name__ == "__main__":
     train_fns_list, dev_fns_list, test_fns_list = load_split_lists()
     train_captions_raw, dev_captions_raw, test_captions_raw = get_caption_split()
-    
+    vocab = create_vocab(train_captions_raw)
+    token2idx, idx2token = vocab2index(vocab)     
+    captions_data = (train_captions_raw.copy(), dev_captions_raw.copy(), test_captions_raw.copy())
+    train_captions, dev_captions, test_captions = process_captions(captions_data, token2idx)
+        
     img_fname = train_fns_list[int(input("Image num: "))]
     visualize_training_example(img_fname, train_captions_raw[img_fname])
     
-    if input("Save? 1 or 0: ") == "1":
-        vocab = create_vocab(train_captions_raw)
-        token2idx, idx2token = vocab2index(vocab)     
-        train_captions, dev_captions, test_captions = process_captions((train_captions_raw, dev_captions_raw, test_captions_raw), 
-                                                                       token2idx)
+    if input("Save? 1 or 0: ") == "1":                
         all_data = (vocab, token2idx, idx2token, train_captions, dev_captions, test_captions)                
         np.save('caption_data.npy', all_data)
         
