@@ -7,6 +7,9 @@ from collections import Counter
 import json
 
 
+exclude_words = ('x')
+
+
 def load_split_lists():
     """ Load train, dev, test image filenames lists"""
     def read_file(fname):
@@ -54,29 +57,52 @@ def get_caption_split():
     return train_captions, dev_captions, test_captions
 
 
-def create_vocab(train_captions_raw):
-    # vocab covers all words in dev, test set -> good!
+def create_vocab(train_captions_raw, min_word_freq=5, exclude_numbers=True):
+    # vocab covers all words in dev, test set for flickr8k -> good!
+    word_count = get_word_count(train_captions_raw)
+    raw_vocab = sorted(word_count.keys())
+    if exclude_numbers:
+        vocab = raw_vocab[raw_vocab.index('a'):]  # exclude numbers
+    
+    new_vocab = []
+    for word, val in word_count.items():  # exclude less freq words
+        if word not in vocab or word in exclude_words:
+            continue
+        if val >= min_word_freq:
+            new_vocab.append(word)
+            
+    return ['<bos>', '<eos>', '<unk>'] + sorted(new_vocab)
+
+
+def get_word_count(train_captions_raw):
+    """ returns dict of word counts {word: count,...} """
     captions_list = itertools.chain.from_iterable(train_captions_raw.values())
     captions_tokens = map(text_to_word_sequence, captions_list)
-    vocab = itertools.chain.from_iterable(captions_tokens)
-    return ["<bos>", "<eos>", "<unk>"] + list(vocab)
+    all_words = itertools.chain.from_iterable(captions_tokens)
+    return Counter(all_words)
+    
 
-
-def vocab2index(vocab):
-    token2idx = {token: i for i, token in enumerate(vocab)}
-    idx2token = {i: token for i, token in enumerate(vocab)}
+def vocab_to_index(vocab):
+    token2idx = {token: i+1 for i, token in enumerate(vocab)}
+    idx2token = {i+1: token for i, token in enumerate(vocab)}
+    
+    assert(len(idx2token) == len(idx2token))
+    for token, idx in token2idx.items():
+        assert(idx2token[idx] == token, "token2idx and idx2token not equivalent")
+    
     return token2idx, idx2token
 
 
 def process_captions(captions_data, token2idx):
     def caption2idx(caption):
-        return [list(map(lambda x: token2idx.get(x, 2), text_to_word_sequence(cap))) 
-                for cap in caption]
+        return [list(map(lambda x: token2idx.get(x, token2idx['<unk>']), 
+                         text_to_word_sequence(cap))) for cap in caption]
     
-    for data in captions_data_new:
+    for data in captions_data:
         for img, cap in data.items():
             data[img] = caption2idx(cap)
-    return captions_data_new
+            
+    return captions_data
 
 
 def visualize_training_example(img_fname, captions):
@@ -91,7 +117,7 @@ if __name__ == "__main__":
     train_fns_list, dev_fns_list, test_fns_list = load_split_lists()
     train_captions_raw, dev_captions_raw, test_captions_raw = get_caption_split()
     vocab = create_vocab(train_captions_raw)
-    token2idx, idx2token = vocab2index(vocab)     
+    token2idx, idx2token = vocab_to_index(vocab)     
     captions_data = (train_captions_raw.copy(), dev_captions_raw.copy(), test_captions_raw.copy())
     train_captions, dev_captions, test_captions = process_captions(captions_data, token2idx)
         
@@ -101,4 +127,3 @@ if __name__ == "__main__":
     if input("Save? 1 or 0: ") == "1":                
         all_data = (vocab, token2idx, idx2token, train_captions, dev_captions, test_captions)                
         np.save('caption_data.npy', all_data)
-        
