@@ -71,7 +71,7 @@ def create_vocab(train_captions_raw, min_word_freq=5, exclude_numbers=True):
         if val >= min_word_freq:
             new_vocab.append(word)
             
-    return ['<bos>', '<eos>', '<unk>'] + sorted(new_vocab)
+    return ['<pad>', '<bos>', '<eos>', '<unk>'] + sorted(new_vocab)
 
 
 def get_word_count(train_captions_raw):
@@ -83,8 +83,8 @@ def get_word_count(train_captions_raw):
     
 
 def vocab_to_index(vocab):
-    token2idx = {token: i+1 for i, token in enumerate(vocab)}
-    idx2token = {i+1: token for i, token in enumerate(vocab)}
+    token2idx = {token: i for i, token in enumerate(vocab)}
+    idx2token = {i: token for i, token in enumerate(vocab)}
     
     assert(len(idx2token) == len(idx2token))
     for token, idx in token2idx.items():
@@ -103,6 +103,14 @@ def process_captions(captions_data, token2idx):
             data[img] = caption2idx(cap)
             
     return captions_data
+
+
+def onehot_to_caption(idx2token, caption):
+    """ 
+    token2idx: dict
+    caption list(int) representing a caption
+    """
+    return ' '.join(map(lambda x: idx2token[x], caption))
 
 
 def visualize_training_example(img_fname, captions):
