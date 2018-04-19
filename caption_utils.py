@@ -15,7 +15,7 @@ def load_split_lists():
     def read_file(fname):
         with open(fname, "r") as f:
             contents = f.read()
-        return contents.split("\n")
+        return contents.split("\n")[:-1]
 
     train_fname = "Flickr_8k.trainImages.txt"
     dev_fname = "Flickr_8k.devImages.txt"
