@@ -21,3 +21,12 @@ Run the above notebook file to get the preprocessed captions.
 
 - Train models using this [notebook](Experiment1_save_model.ipynb)
 - [link to the saved models](https://drive.google.com/drive/folders/1yxzsLg5OtS-wgR8fY-Y3KUhMCtZFEvvC?usp=sharing)
+
+### Model Descriptions
+
+- `weights.best.VGG16.noDropout.hdf5` : `loss: 3.9174e-08 - acc: 0.6714 - val_loss: 3.9518e-08 - val_acc: 0.6685`
+    - emb_size = 150
+    - lstm_size = 300
+    - batch_size=32
+    - epochs=3 / 50
+
