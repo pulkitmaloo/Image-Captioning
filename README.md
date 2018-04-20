@@ -14,6 +14,10 @@ Link to bottleneck features:
 Create a directory `preprocessed_captions`. The result will be saved here.
 
 [One-hot encode captions](Generate_onehot_encoded_captions.ipynb)
+
 Run the above notebook file to get the preprocessed captions.
 
-Link to the preprocessed captions: [link]()
+## Trained Models
+
+- Train models using this [notebook](Experiment1_save_model.ipynb)
+- [link to the saved models](https://drive.google.com/drive/folders/1yxzsLg5OtS-wgR8fY-Y3KUhMCtZFEvvC?usp=sharing)
