@@ -95,8 +95,8 @@ def vocab_to_index(vocab):
 
 def process_captions(captions_data, token2idx):
     def caption2idx(caption):
-        return [list(map(lambda x: token2idx.get(x, token2idx['<unk>']), 
-                         text_to_word_sequence(cap))) for cap in caption]
+        return [ [token2idx["<bos>"]] + list(map(lambda x: token2idx.get(x, token2idx['<unk>']), 
+                         text_to_word_sequence(cap))) + [token2idx["<eos>"]] for cap in caption]
     
     for data in captions_data:
         for img, cap in data.items():
@@ -105,7 +105,13 @@ def process_captions(captions_data, token2idx):
     return captions_data
 
 
-def onehot_to_caption(idx2token, caption):
+def get_max_length(train_captions, dev_captions, test_captions):
+    return max(max([len(x) for x in itertools.chain.from_iterable(train_captions.values())]), 
+               max([len(x) for x in itertools.chain.from_iterable(test_captions.values())]), 
+               max([len(x) for x in itertools.chain.from_iterable(dev_captions.values())]))
+    
+
+def intseq_to_caption(idx2token, caption):
     """ 
     token2idx: dict
     caption list(int) representing a caption
@@ -128,10 +134,8 @@ if __name__ == "__main__":
     token2idx, idx2token = vocab_to_index(vocab)     
     captions_data = (train_captions_raw.copy(), dev_captions_raw.copy(), test_captions_raw.copy())
     train_captions, dev_captions, test_captions = process_captions(captions_data, token2idx)
-        
-    img_fname = train_fns_list[int(input("Image num: "))]
-    visualize_training_example(img_fname, train_captions_raw[img_fname])
+    max_length = get_max_length(train_captions, dev_captions, test_captions)
     
-    if input("Save? 1 or 0: ") == "1":                
-        all_data = (vocab, token2idx, idx2token, train_captions, dev_captions, test_captions)                
-        np.save('caption_data.npy', all_data)
+    
+    img_fname = train_fns_list[int(input("Image num: "))]    
+    visualize_training_example(img_fname, train_captions_raw[img_fname])
