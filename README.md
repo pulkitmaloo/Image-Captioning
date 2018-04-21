@@ -1,5 +1,10 @@
 # CV-Project
 
+## Flask App
+To run the flask app that provides a GUI interface to test the model run
+
+   run ./run_flask.sh
+
 ## Generate Bottleneck Features
 
 [bottleneck features](Generate_Bottleneck_Features.ipynb)
