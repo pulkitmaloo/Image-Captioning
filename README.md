@@ -3,7 +3,7 @@
 ## Flask App
 To run the flask app that provides a GUI interface to test the model run
 
-```run ./run_flask.sh```
+```./run_flask.sh```
 
 ## Generate Bottleneck Features
 
