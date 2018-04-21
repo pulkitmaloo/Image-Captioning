@@ -5,17 +5,21 @@ from keras.models import load_model
 import numpy as np
 import json
 
-def generate_seq(img_input, model):
+def generate_seq(img_input):
     
     with open("token2idx.json",'r') as fp:
-        token2idx = json.load(fp)
-        
+        dict1 = json.load(fp)
+
     with open("idx2token.json",'r') as fp:
-        idx2token = json.load(fp)
-    
+        dict2 = json.load(fp)
+
+    token2idx = {k:int(v) for k,v in dict1.items()}
+    idx2token = {int(k):v for k,v in dict2.items()}
     if img_input.shape != (1, 512):
         img_input = img_input.reshape(1, 512)
-    
+
+    encoder_model = load_model('../encoder.h5')
+    decoder_model = load_model('../decoder.h5')
     assert(img_input.shape == (1, 512))
     stop_condition = False
     decoded_sentence = []
@@ -38,7 +42,6 @@ def generate_seq(img_input, model):
 def get_captions(img_path):
 
     VGG16_model = VGG16(weights='imagenet', include_top=False, pooling='avg')
-    model  = load_model("../test.h5")
     
     #img_path = 'data/Arnav_Hankyu_Pulkit2.jpg'
     img = image.load_img(img_path, target_size=(224, 224))
@@ -47,7 +50,7 @@ def get_captions(img_path):
     x = preprocess_input(x)
 
     features = VGG16_model.predict(x)
-    return generate_seq(features, model)
+    return generate_seq(features)
 
 if __name__ == "__main__":
     print(get_captions("../data/test_image.png"))

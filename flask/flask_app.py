@@ -1,6 +1,6 @@
 import os
 from flask import Flask, render_template, request, redirect, url_for
-#from image_cap import get_captions
+from image_cap import get_captions
 
 app = Flask(__name__)
 
@@ -17,9 +17,9 @@ def upload_file():
     f = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
     
     # add your custom code to check that the uploaded file is a valid image and not a malicious file (out-of-scope for this post)
-    #file.save(f)
+    file.save(f)
     
-    caption= get_captions(f.filename)
-    caption = "test_caption"
+    caption= get_captions(f)
+    #caption = "test_caption"
     #return redirect(url_for('hello', caption=caption))
     return render_template('hello.html', caption=caption)
