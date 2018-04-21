@@ -7,6 +7,7 @@
 </head>
 
 <body>
+<center>
 <header class="navbar">
   <form action="/upload" method="post" enctype="multipart/form-data" >
       <span class="btn btn-default btn-file">
@@ -17,14 +18,25 @@
   </form>
 
 </header>
-</br>
-</br>
+<br>
+<br>
 {% if caption %}
-</hr>
+<hr>
+
+<b>  Uploaded Image :</b>
+<br>
+
+<img src="{{ image_path }}" alt="Uploaded Image">
+
+<br>
+{{ image_path }}
+
+<hr>
 <div class="box">
-  <b>The GENERATED CAPTION IS :</b> <span>{{ caption }}</span>
+  <b>THE GENERATED CAPTION IS :</b> <span>{{ caption }}</span>
 </div>
-</hr>
+<hr>
 {% endif %}
+</center>
 </body>
 </html>

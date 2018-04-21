@@ -4,11 +4,11 @@ from image_cap import get_captions
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = os.path.basename('uploads')
+UPLOAD_FOLDER = os.path.join('static','uploads')
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/')
-def hello(caption=None):
+def hello(caption=None, image_path = None):
     return render_template('hello.html', caption=caption)
 
 @app.route('/upload', methods=['POST'])
@@ -22,4 +22,5 @@ def upload_file():
     caption= get_captions(f)
     #caption = "test_caption"
     #return redirect(url_for('hello', caption=caption))
-    return render_template('hello.html', caption=caption)
+    return render_template('hello.html', caption=caption, image_path=f)
+ 
