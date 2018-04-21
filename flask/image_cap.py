@@ -18,8 +18,8 @@ def generate_seq(img_input):
     if img_input.shape != (1, 512):
         img_input = img_input.reshape(1, 512)
 
-    encoder_model = load_model('../encoder.h5')
-    decoder_model = load_model('../decoder.h5')
+    encoder_model = load_model('../encoder_model.h5')
+    decoder_model = load_model('../decoder_model.h5')
     assert(img_input.shape == (1, 512))
     stop_condition = False
     decoded_sentence = []
@@ -36,7 +36,7 @@ def generate_seq(img_input):
         target_seq = np.array([sampled_token_index]).reshape(1, 1)
         states_value = [h, c]
 
-    return ' '.join(decoded_sentence)
+    return ' '.join(decoded_sentence[:-1])
 
 
 def get_captions(img_path):
