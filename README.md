@@ -1,9 +1,9 @@
-# CV-Project
+# Image-Captioning
 
 ## Flask App
 To run the flask app that provides a GUI interface to test the model run
 
-   run ./run_flask.sh
+```run ./run_flask.sh```
 
 ## Generate Bottleneck Features
 
@@ -30,8 +30,8 @@ Run the above notebook file to get the preprocessed captions.
 ### Model Descriptions
 
 - `weights.best.VGG16.noDropout.hdf5` : `loss: 3.9174e-08 - acc: 0.6714 - val_loss: 3.9518e-08 - val_acc: 0.6685`
-    - emb_size = 150
+    - emb_size = 300
     - lstm_size = 300
-    - batch_size=32
-    - epochs=3 / 50
+    - batch_size = 32
+    - epochs = 3 / 50
 
