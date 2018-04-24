@@ -18,8 +18,8 @@ def generate_seq(img_input):
     if img_input.shape != (1, 512):
         img_input = img_input.reshape(1, 512)
 
-    encoder_model = load_model('../encoder_model.h5')
-    decoder_model = load_model('../decoder_model.h5')
+    encoder_model = load_model('../saved_models/encoder_model.h5')
+    decoder_model = load_model('../saved_models/decoder_model.h5')
     assert(img_input.shape == (1, 512))
     stop_condition = False
     decoded_sentence = []
