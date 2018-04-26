@@ -1,20 +1,25 @@
-# Image-Captioning
+# Image Captioning using Deep Learning
 
 ## Flask App
-To run the flask app that provides a GUI interface to test the model run
+You can test our model in your own computer using the flask app.
+To run the flask app that provides a GUI interface, simply clone our repository and run flask.
 
 ```./run_flask.sh```
 
-## Generate Bottleneck Features
+## If you want to reproduce everything (preprocessing, training, ...) then, follow the steps below:
 
-[bottleneck features](Generate_Bottleneck_Features.ipynb)
+## Step 1: Get data
 
-Link to bottleneck features: 
+1. Make an empty directory `data`.
+2. Download flickr8K data. Then save the folders in `data`.
 
-- Dataset divided into training, test, and validation sets [link](https://drive.google.com/open?id=1blr5_-9c4x6G5QNgkhLNfNCUVegYQASq)
-- [previous link](https://drive.google.com/drive/folders/19FEnwYL8ESA1O1DctG9er7tM7Pe6giuM?usp=sharing)
+## Step 2: Image processing - Generate bottleneck features
 
-## Generate one-hot vectors with captions
+1. Make an empty directory `bottleneck_features`.
+2. Run the `preprocessing1_bottleneck_features.py`. It will generate bottleneck features for pre-trained models VGG16, VGG19, and ResNet50 and then save them in `bottleneck_features` directory.
+3. (Optional) It may take a while to generate the bottleneck features. You can get those files in this [link](https://drive.google.com/open?id=1blr5_-9c4x6G5QNgkhLNfNCUVegYQASq).
+
+## Step 3: Generate one-hot vectors with captions
 
 Create a directory `preprocessed_captions`. The result will be saved here.
 
