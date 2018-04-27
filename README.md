@@ -43,7 +43,6 @@ python preprocessing3_data_for_training_model.py
 
 ## Step 5: Train the model 
 
-
 ...
 ...
 ...
@@ -53,14 +52,6 @@ python preprocessing3_data_for_training_model.py
 
 ## Trained Models
 
-- Train models using this [notebook](Experiment1_save_model.ipynb)
-- [link to the saved models](https://drive.google.com/drive/folders/1yxzsLg5OtS-wgR8fY-Y3KUhMCtZFEvvC?usp=sharing)
-
-### Model Descriptions
-
-- `weights.best.VGG16.noDropout.hdf5` : `loss: 3.9174e-08 - acc: 0.6714 - val_loss: 3.9518e-08 - val_acc: 0.6685`
-    - emb_size = 300
-    - lstm_size = 300
-    - batch_size = 32
-    - epochs = 3 / 50
-
+Try running jupyter notebooks to train different models.
+It takes around an hour to train models for 20 epochs using "Deep Learning Base AMI (Ubuntu) Version 4.0" AWS EC2 machine.
+Here's [link to the saved models](https://drive.google.com/drive/folders/1yxzsLg5OtS-wgR8fY-Y3KUhMCtZFEvvC?usp=sharing)
