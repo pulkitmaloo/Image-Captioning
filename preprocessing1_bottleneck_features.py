@@ -24,6 +24,7 @@ def generate_bottleneck_features(model, dim_last_layer, filename_list):
         x = preprocess_input(x)
         features = model.predict(x)
         bottleneck_features[i] = features
+    return bottleneck_features
 
 # Initialize bottleneck_features
 train_files = get_filenames('data/Flickr8k_text/Flickr_8k.trainImages.txt')
