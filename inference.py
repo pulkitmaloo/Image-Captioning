@@ -164,12 +164,16 @@ def visualize_example(img_fname, captions):
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="Image Captioning")
+    parser.add_argument('-f', '--file_name', type=str, default=None, 
+                        help="File Name, None for running on test images of Flikr8k Dataset")
+    parser.add_argument('-em','--encoder_model', type=str, default='saved_models/encoder_model.h5', 
+                        help ="File path for the encoder model")
+    parser.add_argument('-dm','--decoder_model', type=str, default='saved_models/decoder_model.h5', 
+                        help ="File path for the decoder model")
     parser.add_argument('-bs', '--beam_size', type=int, default=5, help="Beam Size")
     parser.add_argument('-l', '--max_length', type=int, default=20, help="Max Length of the generated sentences")
     parser.add_argument('-ln', '--length_normalization', type=bool, default=True, help="Length Normalization")
     parser.add_argument('-a', '--alpha', type=float, default=0.7, help="Alpha for length normalization")
-    parser.add_argument('-f', '--file_name', type=str, default=None, 
-                        help="File Name, None for running on test images of Flikr8k Dataset")
     
     args = parser.parse_args()
     beam_size = args.beam_size
@@ -177,6 +181,8 @@ if __name__ == "__main__":
     len_norm = args.length_normalization
     alpha = args.alpha
     file_name = args.file_name
+    encoder_model = args.encoder_model
+    decoder_model = args.decoder_model
     
     train_fns_list, dev_fns_list, test_fns_list = load_split_lists()
     train_captions_raw, dev_captions_raw, test_captions_raw = get_caption_split()
@@ -185,8 +191,8 @@ if __name__ == "__main__":
     captions_data = (train_captions_raw.copy(), dev_captions_raw.copy(), test_captions_raw.copy())
     train_captions, dev_captions, test_captions = process_captions(captions_data, token2idx)
     
-    encoder_model = load_model('saved_models/encoder_model.h5')
-    decoder_model = load_model('saved_models/decoder_model.h5')
+    encoder_model = load_model(encoder_model)
+    decoder_model = load_model(decoder_model)
     
     if file_name:
         img_input = get_image_features(file_name)
