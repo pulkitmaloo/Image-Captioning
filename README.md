@@ -99,8 +99,41 @@ optional arguments:
                         filename to save the decoder model
 ```
 
+### Step 6: Test the model
 
-### Step 6: Calculate bleu scores for models `VGG16`, `VGG19`, and `ResNet50`
+1. Make an empty directory `results`
+2. Run `inference.py` to test the model. The resulting caption will be stored in results directory. 
+3. If no filename is provided the model will run for all test images in Flikr8k dataset.
+
+There are several options for `inference.py`
+
+```
+usage: inference.py [-h] [-f FILE_NAME] [-em ENCODER_MODEL]
+                    [-dm DECODER_MODEL] [-bs BEAM_SIZE] [-l MAX_LENGTH]
+                    [-ln LENGTH_NORMALIZATION] [-a ALPHA]
+
+Image Captioning
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -f FILE_NAME, --file_name FILE_NAME
+                        File Name, None for running on test images of Flikr8k
+                        Dataset
+  -em ENCODER_MODEL, --encoder_model ENCODER_MODEL
+                        File path for the encoder model
+  -dm DECODER_MODEL, --decoder_model DECODER_MODEL
+                        File path for the decoder model
+  -bs BEAM_SIZE, --beam_size BEAM_SIZE
+                        Beam Size
+  -l MAX_LENGTH, --max_length MAX_LENGTH
+                        Max Length of the generated sentences
+  -ln LENGTH_NORMALIZATION, --length_normalization LENGTH_NORMALIZATION
+                        Length Normalization
+  -a ALPHA, --alpha ALPHA
+                        Alpha for length normalization
+```
+
+### Step 7: Calculate bleu scores for models `VGG16`, `VGG19`, and `ResNet50`
 
 Calculate bleu scores for test images. In order to calculate bleu scores for three models, you need to train each model first, and save the encoder and decoder models as in `Step 5`. 
 
