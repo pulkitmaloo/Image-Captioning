@@ -1002,3 +1002,6 @@ results/96420612_feb18fc6c6.jpg
 results/968081289_cdba83ce2e.jpg
 results/979383193_0a542a059d.jpg
 results/997722733_0cb5439472.jpg
+data/
+bottleneck_features/
+preprocessed_captions/
