@@ -8,7 +8,7 @@ from nltk.translate.bleu_score import corpus_bleu
 
 from caption_utils import *
 from inference import *
-
+from tqdm import tqdm
 
 def generate_seq(img_input, input_shape, encoder_model, decoder_model):
 
@@ -47,9 +47,7 @@ def get_reference_and_candidates(model, fns_list, input_shape, encoder_model, de
     all_refs = []
     all_candidates = []
 
-    for i, filename in enumerate(fns_list):
-        if i%100 == 0:
-            print("{} / {} images processed".format(i, len(fns_list)))
+    for i, filename in tqdm(enumerate(fns_list)):
         candidate = get_captions(model, "data/Flicker8k_Dataset/"+filename, input_shape, encoder_model, decoder_model).split()
         references = []
         for j, caption in enumerate(test_captions_raw[filename]):
@@ -65,6 +63,11 @@ def calculate_bleu_scores(all_refs, all_candidates):
     bleu4 = corpus_bleu(all_refs, all_candidates, weights=(0, 0, 0, 1)) * 100
     return bleu1, bleu2, bleu3, bleu4
 
+train_fns_list, dev_fns_list, test_fns_list = load_split_lists()
+train_captions_raw, dev_captions_raw, test_captions_raw = get_caption_split()
+vocab = create_vocab(train_captions_raw)
+token2idx, idx2token = vocab_to_index(vocab)
+
 if __name__ == "__main__":
     parser = ArgumentParser(description="Image Captioning")
     parser.add_argument('-m', '--model', type=str, default="VGG16", help="Pretrained model for images")
@@ -78,10 +81,6 @@ if __name__ == "__main__":
     encoder_model = args.encoder_model
     decoder_model = args.decoder_model
 
-    train_fns_list, dev_fns_list, test_fns_list = load_split_lists()
-    train_captions_raw, dev_captions_raw, test_captions_raw = get_caption_split()
-    vocab = create_vocab(train_captions_raw)
-    token2idx, idx2token = vocab_to_index(vocab)
 
     if model == "VGG16":
         from keras.applications.vgg16 import VGG16
