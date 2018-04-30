@@ -46,7 +46,7 @@ def generate_seq(img_input, alpha=1.):
     return ' '.join(decoded_sentence[: -1])
 
 
-def decoder_one_step(sent, beam_size=5, len_norm=True, alpha=1):
+def decoder_one_step(sent, decoder_model, beam_size=5, len_norm=True, alpha=1):
     """ 
     sent: ([neg_log_prob, [1, ...]], [h, c])
     states_value: [h, c]
@@ -92,16 +92,16 @@ def decoder_one_step(sent, beam_size=5, len_norm=True, alpha=1):
     return predicted_sentences
     
     
-def beam_search(img_input, beam_size=5, max_length=20, len_norm=True, alpha=1.):
+def beam_search(img_input, encoder_model, decoder_model, input_shape=512, beam_size=5, max_length=20, len_norm=True, alpha=1., return_probs=False):
     """throws an error on beam_size 1 when <unk> is produced"""
-    if img_input.shape != (1, 512):
-        img_input = img_input.reshape(1, 512)    
-    assert(img_input.shape == (1, 512))
+    if img_input.shape != (1, input_shape):
+        img_input = img_input.reshape(1, input_shape)    
+    assert(img_input.shape == (1, input_shape))
     states_value_initial = encoder_model.predict(img_input)
     
     beg_sent_and_states = ([0., [token2idx['<bos>']]], states_value_initial)
 #     print(beg_sent)
-    top_sentences = decoder_one_step(beg_sent_and_states, beam_size, len_norm, alpha)
+    top_sentences = decoder_one_step(beg_sent_and_states, decoder_model, beam_size, len_norm, alpha)
 #     print(list(map(lambda x: seq_to_sentence(x[1]), top_sentences)))
     
     stop_condition = False
@@ -113,7 +113,7 @@ def beam_search(img_input, beam_size=5, max_length=20, len_norm=True, alpha=1.):
                 new_top_sentences.append(sent)
                 continue
                 
-            predicted_sent = decoder_one_step(sent, beam_size, len_norm, alpha)
+            predicted_sent = decoder_one_step(sent, decoder_model, beam_size, len_norm, alpha)
             new_top_sentences.extend(predicted_sent)
             
         top_sentences = sorted(new_top_sentences, key=lambda x: x[0][0])[: beam_size]
@@ -134,9 +134,11 @@ def beam_search(img_input, beam_size=5, max_length=20, len_norm=True, alpha=1.):
         
         if any_max_len or (eos_cnt == beam_size):
             stop_condition = True        
-            
-    return list(map(lambda x: str(round(x[0][0], 2)) +' '+ seq_to_sentence(x[0][1][1: -1]), top_sentences))
-
+           
+    if return_probs:
+        return list(map(lambda x: str(round(x[0][0], 2)) +' '+ seq_to_sentence(x[0][1][1: -1]), top_sentences))
+    else:
+        return list(map(lambda x: seq_to_sentence(x[0][1][1: -1]), top_sentences))[0]
 
 def get_image_features(img_path):
     VGG16_model = VGG16(weights='imagenet', include_top=False, pooling='avg')
@@ -159,7 +161,7 @@ def visualize_example(img_fname, captions):
     plt.xticks([])
     plt.tight_layout()
     plt.imshow(img)
-    plt.savefig("results/" + img_fname)
+    plt.savefig("results/" + img_fname.split("/")[-1])
     
 
 if __name__ == "__main__":
@@ -196,7 +198,7 @@ if __name__ == "__main__":
     
     if file_name:
         img_input = get_image_features(file_name)
-        generated_captions = beam_search(img_input, beam_size=beam_size, max_length=max_length, len_norm=len_norm, alpha=alpha)
+        generated_captions = beam_search(img_input, encoder_model=encoder_model, decoder_model=decoder_model, beam_size=beam_size, max_length=max_length, len_norm=len_norm, alpha=alpha, return_probs=True)
         visualize_example(file_name, generated_captions)
         print('\n'.join(generated_captions))
         
@@ -208,7 +210,7 @@ if __name__ == "__main__":
         for i, fname in tqdm(enumerate(test_fns_list)):
             img_input = test_encoder_output[i*5, :]
             
-            generated_captions = beam_search(img_input, beam_size=beam_size, max_length=max_length, len_norm=len_norm, alpha=alpha)
+            generated_captions = beam_search(img_input, encoder_model=encoder_model, decoder_model=decoder_model, beam_size=beam_size, max_length=max_length, len_norm=len_norm, alpha=alpha, return_probs=True)
     #        original_caption = seq_to_sentence(np.argmax(test_decoder_target[i, :], -1))
     #        original_caption = original_caption[: original_caption.index('<')]
     

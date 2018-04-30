@@ -7,12 +7,13 @@ from nltk.translate.bleu_score import sentence_bleu
 from nltk.translate.bleu_score import corpus_bleu
 
 from caption_utils import *
+from inference import *
+
 
 def generate_seq(img_input, input_shape, encoder_model, decoder_model):
 
     if img_input.shape != (1, input_shape):
         img_input = img_input.reshape(1, input_shape)
-
 
     assert(img_input.shape == (1, input_shape))
     stop_condition = False
@@ -40,7 +41,7 @@ def get_captions(model, img_path, input_shape, encoder_model, decoder_model):
     x = preprocess_input(x)
 
     features = model.predict(x)
-    return generate_seq(features, input_shape, encoder_model, decoder_model)
+    return beam_search(features, input_shape=input_shape, encoder_model=encoder_model, decoder_model=decoder_model)
 
 def get_reference_and_candidates(model, fns_list, input_shape, encoder_model, decoder_model):
     all_refs = []
