@@ -106,5 +106,5 @@ if __name__ == "__main__":
     all_refs, all_candidates = get_reference_and_candidates(pretrained_model, test_fns_list, input_shape, encoder_model, decoder_model)
     bleu_scores = calculate_bleu_scores(all_refs, all_candidates)
 
-    for bleu_score in bleu_scores:
-        print("Bleu1: {:0.2f}".format(bleu_score))
+    for i, bleu_score in enumerate(bleu_scores):
+        print("Bleu{}: {:0.2f}".format(i+1, bleu_score))
