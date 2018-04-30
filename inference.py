@@ -163,6 +163,12 @@ def visualize_example(img_fname, captions):
     plt.imshow(img)
     plt.savefig("results/" + img_fname.split("/")[-1])
     
+train_fns_list, dev_fns_list, test_fns_list = load_split_lists()
+train_captions_raw, dev_captions_raw, test_captions_raw = get_caption_split()
+vocab = create_vocab(train_captions_raw)
+token2idx, idx2token = vocab_to_index(vocab)    
+captions_data = (train_captions_raw.copy(), dev_captions_raw.copy(), test_captions_raw.copy())
+train_captions, dev_captions, test_captions = process_captions(captions_data, token2idx)
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="Image Captioning")
@@ -186,12 +192,6 @@ if __name__ == "__main__":
     encoder_model = args.encoder_model
     decoder_model = args.decoder_model
     
-    train_fns_list, dev_fns_list, test_fns_list = load_split_lists()
-    train_captions_raw, dev_captions_raw, test_captions_raw = get_caption_split()
-    vocab = create_vocab(train_captions_raw)
-    token2idx, idx2token = vocab_to_index(vocab)    
-    captions_data = (train_captions_raw.copy(), dev_captions_raw.copy(), test_captions_raw.copy())
-    train_captions, dev_captions, test_captions = process_captions(captions_data, token2idx)
     
     encoder_model = load_model(encoder_model)
     decoder_model = load_model(decoder_model)
