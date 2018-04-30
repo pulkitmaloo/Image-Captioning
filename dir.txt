@@ -8,6 +8,7 @@
 │   ├── static
 │   │   └── uploads
 │   └── templates
+├── notebooks
 ├── preprocessed_captions
 ├── reports
 │   └── interim-project-report
@@ -15,4 +16,4 @@
 ├── results
 └── saved_models
 
-15 directories
+16 directories
