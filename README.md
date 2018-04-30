@@ -99,6 +99,8 @@ optional arguments:
                         filename to save the decoder model
 ```
 
+3. (Optional) It takes about an hour to train models using GPU machine. You can download the trained models in this [link](https://drive.google.com/drive/folders/1yxzsLg5OtS-wgR8fY-Y3KUhMCtZFEvvC?usp=sharing).
+
 ### Step 6: Test the model
 
 1. Make an empty directory `results`
@@ -135,7 +137,34 @@ optional arguments:
 
 ### Step 7: Calculate bleu scores for models `VGG16`, `VGG19`, and `ResNet50`
 
-Calculate bleu scores for test images. In order to calculate bleu scores for three models, you need to train each model first, and save the encoder and decoder models as in `Step 5`. 
+1. Calculate BLEU1, BLEU2, BLEU3, BLEU4, using `calculate_bleu_scores_per_model.py`. 
+
+```
+python -i calculate_bleu_scores_per_model.py -m VGG16 -em saved_models/encoder_model_VGG16_2.h5 -dm saved_models/decoder_model_VGG16_2.h5
+```
+
+There are several options for `calculate_bleu_scores_per_model.py`
+
+```
+usage: calculate_bleu_scores_per_model.py [-h] [-m MODEL] [-tm TRAINED_MODEL]
+                                          [-em ENCODER_MODEL]
+                                          [-dm DECODER_MODEL]
+
+Image Captioning
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -m MODEL, --model MODEL
+                        Pretrained model for images
+  -tm TRAINED_MODEL, --trained_model TRAINED_MODEL
+                        filename to save the trained model
+  -em ENCODER_MODEL, --encoder_model ENCODER_MODEL
+                        filename to save the encoder model
+  -dm DECODER_MODEL, --decoder_model DECODER_MODEL
+                        filename to save the decoder model
+```
+
+2. (Optional) In order to calculate bleu scores for three greedy models in the report, you need to train each model first, and save the encoder and decoder models as in `Step 5`. 
 
 ```
 python calculate_bleu_scores.py
