@@ -1,0 +1,18 @@
+.
+├── __pycache__
+├── bottleneck_features
+├── data
+│   ├── Flicker8k_Dataset
+│   └── Flickr8k_text
+├── flask
+│   ├── static
+│   │   └── uploads
+│   └── templates
+├── preprocessed_captions
+├── reports
+│   └── interim-project-report
+│       └── images
+├── results
+└── saved_models
+
+15 directories

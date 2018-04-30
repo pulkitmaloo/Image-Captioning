@@ -1,17 +1,20 @@
 from keras.utils import to_categorical
 from caption_utils import *
+from tqdm import tqdm
+
 
 def one_hot_encode(fns_list, caption_dictionary, num_captions_per_image, max_words_in_sentence, num_words):
     total_captions = len(caption_dictionary) * num_captions_per_image
     captions_onehot_processed = np.zeros((total_captions, max_words_in_sentence, num_words)).astype(bool)
-    for i, filename in enumerate(fns_list):
+    for i, filename in tqdm(enumerate(fns_list)):
         for j, caption in enumerate(caption_dictionary[filename]):
             onehot = to_categorical(caption, num_classes=len(vocab))
             for k, word in enumerate(onehot):
                 captions_onehot_processed[i*num_captions_per_image+j][k] = word
-        if (i%100 == 99):
-            print("{} / {} images processed".format(i+1, len(caption_dictionary)))
+        # if (i%100 == 99):
+            # print("{} / {} images processed".format(i+1, len(caption_dictionary)))
     return captions_onehot_processed
+
 
 train_fns_list, validation_fns_list, test_fns_list = load_split_lists()
 

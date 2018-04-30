@@ -86,9 +86,9 @@ def vocab_to_index(vocab):
     token2idx = {token: i for i, token in enumerate(vocab)}
     idx2token = {i: token for i, token in enumerate(vocab)}
     
-    assert(len(idx2token) == len(idx2token))
+    assert(len(idx2token) == len(token2idx))
     for token, idx in token2idx.items():
-        assert(idx2token[idx] == token, "token2idx and idx2token not equivalent")
+        assert idx2token[idx] == token, "token2idx and idx2token not equivalent"
     
     return token2idx, idx2token
 
@@ -139,3 +139,4 @@ if __name__ == "__main__":
     
     img_fname = train_fns_list[int(input("Image num: "))]    
     visualize_training_example(img_fname, train_captions_raw[img_fname])
+    

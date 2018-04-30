@@ -10,6 +10,7 @@ from keras.callbacks import ModelCheckpoint
 
 from caption_utils import *
 
+
 # Since there are 5 captions per image, duplicate the bottleneck features
 def duplicate_bottleneck_features(features):
     num_captions = 5 # 5 stands for number of captions per image
@@ -20,6 +21,7 @@ def duplicate_bottleneck_features(features):
         for j in range(num_captions):
             features_dup[i*num_captions + j] = image
     return features_dup 
+
 
 def decode_sequence(input_seq):
     # Encode the input as state vectors.
@@ -56,6 +58,7 @@ def decode_sequence(input_seq):
 
     return decoded_sentence
 
+
 def generate_seq(img_input, input_shape):
     if img_input.shape != (1, input_shape):
         img_input = img_input.reshape(1, input_shape)
@@ -77,6 +80,7 @@ def generate_seq(img_input, input_shape):
         states_value = [h, c]
 
     return ' '.join(decoded_sentence)
+
 
 if __name__ == "__main__":
     parser = ArgumentParser(description="Image Captioning")

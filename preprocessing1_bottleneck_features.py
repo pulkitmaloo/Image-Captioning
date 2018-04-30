@@ -1,6 +1,7 @@
 import glob
 import numpy as np
 from keras.preprocessing import image
+from tqdm import tqdm
 
 #############################################################
 # Things to do before running the script
@@ -17,7 +18,7 @@ def get_filenames(txtfile):
 
 def generate_bottleneck_features(model, dim_last_layer, filename_list):
     bottleneck_features = np.zeros((len(filename_list), dim_last_layer))
-    for i, path in enumerate(filename_list):
+    for i, path in tqdm(enumerate(filename_list)):
         img = image.load_img(path, target_size=(224, 224))
         x = image.img_to_array(img)
         x = np.expand_dims(x, axis=0)
