@@ -240,5 +240,8 @@ if __name__ == "__main__":
                                              max_length=max_length, len_norm=len_norm, alpha=alpha, return_probs=True, input_shape=input_shape)
     #        original_caption = seq_to_sentence(np.argmax(test_decoder_target[i, :], -1))
     #        original_caption = original_caption[: original_caption.index('<')]
-    
-            visualize_example("data/Flicker8k_Dataset/" + fname, generated_captions)
+
+            try:
+                visualize_example("data/Flicker8k_Dataset/" + fname, generated_captions)
+            except:
+                continue
