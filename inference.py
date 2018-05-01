@@ -5,9 +5,7 @@ from tqdm import tqdm
 from keras.models import load_model
 from keras.preprocessing import image
 from argparse import ArgumentParser
-from keras.applications.vgg16 import VGG16
-from keras.applications.vgg16 import preprocess_input
-
+from main import duplicate_bottleneck_features
 
 def seq_to_sentence(sent):
     return ' '.join([idx2token[idx] for idx in sent])
@@ -140,16 +138,28 @@ def beam_search(img_input, encoder_model, decoder_model, input_shape=512, beam_s
     else:
         return list(map(lambda x: seq_to_sentence(x[0][1][1: -1]), top_sentences))[0]
 
-def get_image_features(img_path):
-    VGG16_model = VGG16(weights='imagenet', include_top=False, pooling='avg')
-    
+def get_image_features(img_path, model):
+    if model == "VGG16":
+        from keras.applications.vgg16 import VGG16
+        from keras.applications.vgg16 import preprocess_input
+        pretrained_model = VGG16(weights='imagenet', include_top=False, pooling='avg')
+    elif model == "VGG19":
+        from keras.applications.vgg19 import VGG19
+        from keras.applications.vgg19 import preprocess_input
+        pretrained_model = VGG19(weights='imagenet', include_top=False, pooling='avg')
+    elif model == "ResNet50":
+        from keras.applications.resnet50 import ResNet50
+        from keras.applications.resnet50 import preprocess_input
+        pretrained_model = ResNet50(weights='imagenet', include_top=False, pooling='avg')
+      
+      
     #img_path = 'data/Arnav_Hankyu_Pulkit2.jpg'
     img = image.load_img(img_path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
     x = preprocess_input(x)
 
-    features = VGG16_model.predict(x)
+    features = pretrained_model.predict(x)
     return features
 
 
@@ -174,14 +184,15 @@ if __name__ == "__main__":
     parser = ArgumentParser(description="Image Captioning")
     parser.add_argument('-f', '--file_name', type=str, default=None, 
                         help="File Name, None for running on test images of Flikr8k Dataset")
-    parser.add_argument('-em','--encoder_model', type=str, default='saved_models/encoder_model.h5', 
+    parser.add_argument('-em','--encoder_model', type=str, default='saved_models/encoder_model_ResNet50_lr000051_emb512.h5', 
                         help ="File path for the encoder model")
-    parser.add_argument('-dm','--decoder_model', type=str, default='saved_models/decoder_model.h5', 
+    parser.add_argument('-dm','--decoder_model', type=str, default='saved_models/decoder_model_ResNet50_lr000051_emb512.h5', 
                         help ="File path for the decoder model")
     parser.add_argument('-bs', '--beam_size', type=int, default=5, help="Beam Size")
     parser.add_argument('-l', '--max_length', type=int, default=20, help="Max Length of the generated sentences")
     parser.add_argument('-ln', '--length_normalization', type=bool, default=True, help="Length Normalization")
     parser.add_argument('-a', '--alpha', type=float, default=0.7, help="Alpha for length normalization")
+    parser.add_argument('-m', '--model', type=str, default='ResNet50', help='Model to use as CNN')
     
     args = parser.parse_args()
     beam_size = args.beam_size
@@ -191,26 +202,42 @@ if __name__ == "__main__":
     file_name = args.file_name
     encoder_model = args.encoder_model
     decoder_model = args.decoder_model
-    
+    model = args.model
     
     encoder_model = load_model(encoder_model)
     decoder_model = load_model(decoder_model)
     
+    if model == 'VGG16':
+        input_shape = 512
+        all_data = np.load('train_dev_test.npz')
+        test_encoder_output = all_data['test_encoder_output']
+    if model == 'VGG19':
+        input_shape = 512
+        bottleneck_features = np.load('bottleneck_features/Flicker8k_bottleneck_features_VGG19_avgpooling.npz')
+        bottleneck_features_test = bottleneck_features["test"]
+        test_encoder_output = duplicate_bottleneck_features(bottleneck_features_test)
+    elif model == 'ResNet50':
+        input_shape = 2048
+        bottleneck_features = np.load('bottleneck_features/Flicker8k_bottleneck_features_ResNet50_avgpooling.npz')
+        bottleneck_features_test = bottleneck_features["test"]
+        test_encoder_output = duplicate_bottleneck_features(bottleneck_features_test)
+    else:
+        print('Model not found')
+
     if file_name:
-        img_input = get_image_features(file_name)
-        generated_captions = beam_search(img_input, encoder_model=encoder_model, decoder_model=decoder_model, beam_size=beam_size, max_length=max_length, len_norm=len_norm, alpha=alpha, return_probs=True)
+        img_input = get_image_features(file_name, model)
+        generated_captions = beam_search(img_input, encoder_model=encoder_model, decoder_model=decoder_model, beam_size=beam_size, 
+                                         max_length=max_length, len_norm=len_norm, alpha=alpha, return_probs=True, input_shape=input_shape)
         visualize_example(file_name, generated_captions)
         print('\n'.join(generated_captions))
         
     else:        
-        all_data = np.load('train_dev_test.npz')
-        test_encoder_output = all_data['test_encoder_output']
-        test_decoder_target = all_data['test_decoder_target'][:,1:,:]    
 
         for i, fname in tqdm(enumerate(test_fns_list)):
             img_input = test_encoder_output[i*5, :]
             
-            generated_captions = beam_search(img_input, encoder_model=encoder_model, decoder_model=decoder_model, beam_size=beam_size, max_length=max_length, len_norm=len_norm, alpha=alpha, return_probs=True)
+            generated_captions = beam_search(img_input, encoder_model=encoder_model, decoder_model=decoder_model, beam_size=beam_size, 
+                                             max_length=max_length, len_norm=len_norm, alpha=alpha, return_probs=True, input_shape=input_shape)
     #        original_caption = seq_to_sentence(np.argmax(test_decoder_target[i, :], -1))
     #        original_caption = original_caption[: original_caption.index('<')]
     

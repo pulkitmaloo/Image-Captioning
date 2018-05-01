@@ -41,7 +41,7 @@ def get_captions(model, img_path, input_shape, encoder_model, decoder_model):
     x = preprocess_input(x)
 
     features = model.predict(x)
-    return beam_search(features, input_shape=input_shape, encoder_model=encoder_model, decoder_model=decoder_model)
+    return beam_search(features, input_shape=input_shape, encoder_model=encoder_model, decoder_model=decoder_model, beam_size=5)
 
 def get_reference_and_candidates(model, fns_list, input_shape, encoder_model, decoder_model):
     all_refs = []
