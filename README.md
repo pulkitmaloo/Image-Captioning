@@ -1,5 +1,7 @@
 # Image Captioning using Deep Learning
 
+Authors: <a href="https://github.com/seashiva94">Arnav Arnav</a>, <a href="https://github.com/HankyuJang">Hankyu Jang</a>, <a href="https://github.com/pulkitmaloo">Pulkit Maloo</a>
+
 You can find the details for our experiments in the report.
 
 ## Flask App
@@ -112,7 +114,7 @@ There are several options for `inference.py`
 ```
 usage: inference.py [-h] [-f FILE_NAME] [-em ENCODER_MODEL]
                     [-dm DECODER_MODEL] [-bs BEAM_SIZE] [-l MAX_LENGTH]
-                    [-ln LENGTH_NORMALIZATION] [-a ALPHA]
+                    [-ln LENGTH_NORMALIZATION] [-a ALPHA] [-m MODEL]
 
 Image Captioning
 
@@ -133,6 +135,8 @@ optional arguments:
                         Length Normalization
   -a ALPHA, --alpha ALPHA
                         Alpha for length normalization
+  -m MODEL, --model MODEL
+                        Model to use as CNN
 ```
 
 ### Step 7: Calculate bleu scores for models `VGG16`, `VGG19`, and `ResNet50`
